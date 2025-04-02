@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Función para generar intervalos de 40 minutos correctamente
     function generateTimeSlots(startHour, endHour) {
         let slots = [];
         let hour = startHour;
@@ -15,18 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
         while (hour < endHour || (hour === endHour && minute === 0)) {
             let time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
             slots.push(time);
-        
-            // Sumar 40 minutos
             minute += 40;
             if (minute >= 60) {
-                minute -= 60; // Ajustar los minutos correctamente
-                hour++; // Avanzar la hora
+                minute -= 60;
+                hour++;
             }
         }
         return slots;
     }
 
-    // Días y horarios de lunes a viernes (7 AM - 6 PM) y sábado (7 AM - 2 PM)
     const schedule = {
         "Lunes": generateTimeSlots(7, 18),
         "Martes": generateTimeSlots(7, 18),
@@ -36,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function () {
         "Sábado": generateTimeSlots(7, 14)
     };
 
-    // Crear checkboxes dinámicamente
     Object.keys(schedule).forEach(day => {
         let dayLabel = document.createElement('h4');
         dayLabel.textContent = day;
@@ -60,16 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById('doctorForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // Obtener los valores del formulario
     const name = document.getElementById('name').value;
     const familyName = document.getElementById('familyName').value;
-    const identifierSystem = document.getElementById('identifierSystem').value;
+    const identifierSystem = document.getElementById('identifierSystem').value || "http://example.org/doctor-id";
     const identifierValue = document.getElementById('identifierValue').value;
     const specialty = document.getElementById('specialty').value;
     const cellPhone = document.getElementById('cellPhone').value;
     const email = document.getElementById('email').value;
 
-    // Obtener horarios seleccionados
     let selectedTimes = [];
     document.querySelectorAll('input[name="availability"]:checked').forEach(checkbox => {
         selectedTimes.push(checkbox.value);
@@ -80,8 +73,7 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
         return;
     }
 
-    // Crear el objeto Practitioner en formato FHIR
-    const doctor = {
+    const practitioner = {
         resourceType: "Practitioner",
         name: [{
             use: "official",
@@ -102,28 +94,43 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
             use: "work"
         }],
         qualification: [{
-            identifier: [{
-                system: "http://registro-medico",
-                value: identifierValue
-            }],
             code: {
                 text: specialty
             }
-        }],
-        availability: selectedTimes
+        }]
     };
 
-    // Enviar los datos usando Fetch API
     fetch('https://doctorsbackend-z586.onrender.com/practitioner', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(doctor)
+        body: JSON.stringify(practitioner)
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
+        console.log('Practitioner creado:', data);
+        return fetch('https://doctorsbackend-z586.onrender.com/practitionerRole', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                resourceType: "PractitionerRole",
+                practitioner: {
+                    reference: `Practitioner/${data.id}`
+                },
+                availableTime: [{
+                    daysOfWeek: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
+                    availableStartTime: "07:00:00",
+                    availableEndTime: "18:00:00"
+                }]
+            })
+        });
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('PractitionerRole creado:', data);
         alert('Médico registrado exitosamente!');
     })
     .catch((error) => {
