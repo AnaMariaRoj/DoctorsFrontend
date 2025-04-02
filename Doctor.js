@@ -1,3 +1,48 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const availabilityDiv = document.getElementById('availability');
+
+    // Función para generar intervalos de 40 minutos
+    function generateTimeSlots(start, end) {
+        let slots = [];
+        let currentTime = new Date();
+        currentTime.setHours(start, 0, 0);
+
+        while (currentTime.getHours() < end) {
+            let hours = currentTime.getHours().toString().padStart(2, '0');
+            let minutes = currentTime.getMinutes().toString().padStart(2, '0');
+            slots.push(`${hours}:${minutes}`);
+            currentTime.setMinutes(currentTime.getMinutes() + 40);
+        }
+
+        return slots;
+    }
+
+    // Días y horarios
+    const schedule = {
+        "Lunes a Viernes": generateTimeSlots(7, 18),
+        "Sábado": generateTimeSlots(7, 14)
+    };
+
+    // Crear checkboxes dinámicamente
+    Object.keys(schedule).forEach(day => {
+        let dayLabel = document.createElement('h4');
+        dayLabel.textContent = day;
+        availabilityDiv.appendChild(dayLabel);
+
+        schedule[day].forEach(time => {
+            let label = document.createElement('label');
+            let checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'availability';
+            checkbox.value = `${day} ${time}`;
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(` ${time}`));
+            availabilityDiv.appendChild(label);
+            availabilityDiv.appendChild(document.createElement('br'));
+        });
+    });
+});
+
 document.getElementById('doctorForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -9,7 +54,17 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
     const specialty = document.getElementById('specialty').value;
     const cellPhone = document.getElementById('cellPhone').value;
     const email = document.getElementById('email').value;
-    const availability = document.getElementById('availability').value;
+
+    // Obtener horarios seleccionados
+    let selectedTimes = [];
+    document.querySelectorAll('input[name="availability"]:checked').forEach(checkbox => {
+        selectedTimes.push(checkbox.value);
+    });
+
+    if (selectedTimes.length === 0) {
+        alert("Por favor, selecciona al menos un horario disponible.");
+        return;
+    }
 
     // Crear el objeto Practitioner en formato FHIR
     const doctor = {
@@ -41,7 +96,7 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
                 text: specialty
             }
         }],
-        availability: availability
+        availability: selectedTimes
     };
 
     // Enviar los datos usando Fetch API
