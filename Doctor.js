@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Función para generar intervalos de 40 minutos
+    // Función para generar intervalos de 40 minutos correctamente
     function generateTimeSlots(startHour, endHour) {
         let slots = [];
         let hour = startHour;
@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', function () {
         while (hour < endHour || (hour === endHour && minute === 0)) {
             let time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
             slots.push(time);
+        
+            // Sumar 40 minutos
             minute += 40;
             if (minute >= 60) {
-                minute = 0;
-                hour++;
+                minute -= 60; // Ajustar los minutos correctamente
+                hour++; // Avanzar la hora
             }
         }
         return slots;
