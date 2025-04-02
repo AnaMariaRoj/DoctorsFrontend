@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return slots;
     }
 
-    // Días y horarios
+    // Días y horarios de lunes a viernes (7 AM - 6 PM) y sábado (7 AM - 2 PM)
     const schedule = {
         "Lunes": generateTimeSlots(7, 18),
         "Martes": generateTimeSlots(7, 18),
