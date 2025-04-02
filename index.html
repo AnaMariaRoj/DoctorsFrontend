@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Médicos HL7 FHIR</title>
+</head>
+<body>
+    <h1>Formulario de Médico HL7 FHIR</h1>
+    <form id="doctorForm">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="familyName">Apellido:</label>
+        <input type="text" id="familyName" name="familyName" required><br><br>
+
+        <label for="identifierSystem">Tipo de documento:</label>
+        <select id="identifierSystem" name="identifierSystem" required>
+            <option value="http://cedula">Cédula de ciudadanía</option>
+            <option value="http://pasaporte">Pasaporte</option>
+        </select><br><br>
+
+        <label for="identifierValue">Número de documento:</label>
+        <input type="text" id="identifierValue" name="identifierValue" required><br><br>
+
+        <label for="specialty">Especialidad:</label>
+        <input type="text" id="specialty" name="specialty" required><br><br>
+
+        <label for="cellPhone">Teléfono:</label>
+        <input type="text" id="cellPhone" name="cellPhone" required><br><br>
+
+        <label for="email">Correo electrónico:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="availability">Horarios Disponibles:</label>
+        <input type="text" id="availability" name="availability" placeholder="Ej: Lunes a Viernes 8am - 5pm" required><br><br>
+
+        <button type="submit">Registrar Médico</button>
+    </form>
+
+    <script src="doctor.js"></script>
+</body>
+</html>
