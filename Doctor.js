@@ -114,7 +114,7 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
     };
 
     // Enviar los datos usando Fetch API
-    fetch('https://hl7-fhir-ehr-anam-0132-b.onrender.com/medico', {
+    fetch('https://doctorsfrontend-8ghv.onrender.com/practitioner', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
