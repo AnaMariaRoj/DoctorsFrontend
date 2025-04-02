@@ -114,7 +114,7 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
     };
 
     // Enviar los datos usando Fetch API
-    fetch('https://doctorsfrontend-8ghv.onrender.com/practitioner', {
+    fetch('https://doctorsbackend-z586.onrender.com/practitioner', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
