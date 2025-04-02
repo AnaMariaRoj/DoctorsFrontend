@@ -117,3 +117,55 @@ document.getElementById('doctorForm').addEventListener('submit', function(event)
         alert('Hubo un error al registrar el médico.');
     });
 });
+document.addEventListener('DOMContentLoaded', function () {
+    const availabilityDiv = document.getElementById('availability');
+
+    if (!availabilityDiv) {
+        console.error("Elemento 'availability' no encontrado");
+        return;
+    }
+
+    // Función para generar intervalos de 40 minutos
+    function generateTimeSlots(startHour, endHour) {
+        let slots = [];
+        let hour = startHour;
+        let minute = 0;
+
+        while (hour < endHour || (hour === endHour && minute === 0)) {
+            let time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+            slots.push(time);
+            minute += 40;
+            if (minute >= 60) {
+                minute = 0;
+                hour++;
+            }
+        }
+        return slots;
+    }
+
+    // Días y horarios
+    const schedule = {
+        "Lunes a Viernes": generateTimeSlots(7, 18), // 7 AM - 6 PM
+        "Sábado": generateTimeSlots(7, 14) // 7 AM - 2 PM
+    };
+
+    // Crear checkboxes dinámicamente
+    Object.keys(schedule).forEach(day => {
+        let dayLabel = document.createElement('h4');
+        dayLabel.textContent = day;
+        availabilityDiv.appendChild(dayLabel);
+
+        schedule[day].forEach(time => {
+            let label = document.createElement('label');
+            let checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'availability';
+            checkbox.value = `${day} ${time}`;
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(` ${time}`));
+            availabilityDiv.appendChild(label);
+            availabilityDiv.appendChild(document.createElement('br'));
+        });
+    });
+});
